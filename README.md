@@ -9,6 +9,9 @@ import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
 import { interact, interactRule } from '@replit/codemirror-interact';
 
+// 1. move cursor to "123"
+// 2. hold Alt key
+// 3. drag
 new EditorView({
   state: EditorState.create({
     doc: 'const num = 123',

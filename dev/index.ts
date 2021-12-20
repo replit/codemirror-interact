@@ -1,3 +1,7 @@
+// 1. move cursor on different values
+// 2. hold Alt key
+// 3. click / drag
+
 import { EditorView } from '@codemirror/view';
 import { EditorState, basicSetup } from '@codemirror/basic-setup';
 import { javascript } from '@codemirror/lang-javascript';
