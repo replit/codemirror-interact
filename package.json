@@ -1,0 +1,34 @@
+{
+  "name": "@replit/codemirror-interact",
+  "description": "Interact with custom values",
+  "version": "0.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "tga",
+    "email": "tga@space55.xyz"
+  },
+  "type": "module",
+  "module": "dist/index.js",
+  "main": "dist/index.cjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "scripts": {
+    "dev": "vite ./dev",
+    "build": "cm-buildhelper src/interact.ts",
+    "test": "cm-runtests"
+  },
+  "peerDependencies": {
+    "@codemirror/state": "0.19.x",
+    "@codemirror/view": "0.19.x"
+  },
+  "devDependencies": {
+    "@codemirror/basic-setup": "^0.19.1",
+    "@codemirror/buildhelper": "^0.1.11",
+    "@codemirror/lang-javascript": "^0.19.3",
+    "@codemirror/view": "^0.19.35",
+    "vite": "^2.7.4"
+  }
+}
