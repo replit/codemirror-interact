@@ -40,6 +40,26 @@ const interactTheme = EditorView.theme({
   },
 });
 
+/**
+ * A rule that defines a type of value and its interaction.
+ *
+ * @example
+ * ```
+ * // a number dragger
+ * interactRule.of({
+ *     // the regexp matching the value
+ *     regexp: /-?\b\d+\.?\d*\b/g,
+ *     // set cursor to "ew-resize" on hover
+ *     cursor: "ew-resize",
+ *     // change number value based on mouse X movement on drag
+ *     onDrag: (text, setText, e) => {
+ *         const newVal = Number(text) + e.movementX;
+ *         if (isNaN(newVal)) return;
+ *         setText(newVal.toString());
+ *     },
+ * })
+ * ```
+ */
 export const interactRule = Facet.define<InteractRule>();
 
 type ViewState = PluginValue & {
@@ -50,8 +70,8 @@ type ViewState = PluginValue & {
   deco: DecorationSet,
   getMatch(): Target | null,
   updateText(target: Target): (text: string) => void,
-  focus(target: Target): void,
-  unfocus(): void,
+  highlight(target: Target): void,
+  unhighlight(): void,
 }
 
 const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
@@ -62,6 +82,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
   mouseY: 0,
   deco: Decoration.none,
 
+  // Get current match under cursor from all rules
   getMatch() {
 
     const rules = view.state.facet(interactRule);
@@ -79,6 +100,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
         const start = m.index;
         const end = m.index + text.length;
         if (lpos < start || lpos > end) continue;
+        // If there are overlap matches from different rules, use the smaller one
         if (!match || text.length < match.text.length) {
           match = {
             rule: rule,
@@ -106,7 +128,8 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     };
   },
 
-  focus(target) {
+  // highlight a target (e.g. currently dragging or hovering)
+  highlight(target) {
     if (target.rule.cursor) {
       document.body.style.cursor = target.rule.cursor;
     }
@@ -115,7 +138,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     });
   },
 
-  unfocus() {
+  unhighlight() {
     document.body.style.cursor = "auto";
     view.dispatch({
       effects: setInteract.of(null),
@@ -171,16 +194,16 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
       if (!e.altKey) return;
 
       if (this.dragging) {
-        this.focus(this.dragging);
+        this.highlight(this.dragging);
         if (this.dragging.rule.onDrag) {
           this.dragging.rule.onDrag(this.dragging.text, this.updateText(this.dragging), e);
         }
       } else {
         this.hovering = this.getMatch();
         if (this.hovering) {
-          this.focus(this.hovering);
+          this.highlight(this.hovering);
         } else {
-          this.unfocus();
+          this.unhighlight();
         }
       }
 
@@ -189,7 +212,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     mouseup(e, view) {
       this.dragging = null;
       if (!this.hovering) {
-        this.unfocus();
+        this.unhighlight();
       }
     },
 
@@ -197,13 +220,13 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
       if (!e.altKey) return;
       this.hovering = this.getMatch();
       if (this.hovering) {
-        this.focus(this.hovering);
+        this.highlight(this.hovering);
       }
     },
 
     keyup(e, view) {
       if (!e.altKey) {
-        this.unfocus();
+        this.unhighlight();
       }
     },
 
