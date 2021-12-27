@@ -2,6 +2,8 @@
 
 A codemirror extension that lets you interact with different values (clicking, dragging, etc).
 
+[demo](https://replit.com/@slmjkdbtl/codemirror-interact)
+
 ### Usage
 
 ```ts
