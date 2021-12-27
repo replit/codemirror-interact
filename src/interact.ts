@@ -9,12 +9,12 @@ import {
   PluginValue,
   DecorationSet,
   Decoration,
-} from "@codemirror/view";
+} from '@codemirror/view'
 
 import {
   StateEffect,
   Facet,
-} from "@codemirror/state";
+} from '@codemirror/state'
 
 type Target = {
   pos: number,
@@ -30,13 +30,13 @@ export type InteractRule = {
   onDrag?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
 }
 
-const mark = Decoration.mark({ class: "cm-interact" });
+const mark = Decoration.mark({ class: 'cm-interact'});
 const setInteract = StateEffect.define<Target | null>();
 
 const interactTheme = EditorView.theme({
-  ".cm-interact": {
-    background: "rgba(128, 128, 255, 0.2)",
-    borderRadius: "4px",
+  '.cm-interact': {
+    background: 'rgba(128, 128, 255, 0.2)',
+    borderRadius: '4px'
   },
 });
 
@@ -49,8 +49,8 @@ const interactTheme = EditorView.theme({
  * interactRule.of({
  *     // the regexp matching the value
  *     regexp: /-?\b\d+\.?\d*\b/g,
- *     // set cursor to "ew-resize" on hover
- *     cursor: "ew-resize",
+ *     // set cursor to 'ew-resize'on hover
+ *     cursor: 'ew-resize'
  *     // change number value based on mouse X movement on drag
  *     onDrag: (text, setText, e) => {
  *         const newVal = Number(text) + e.movementX;
@@ -139,7 +139,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
   },
 
   unhighlight() {
-    document.body.style.cursor = "auto";
+    document.body.style.cursor = 'auto'
     view.dispatch({
       effects: setInteract.of(null),
     });
