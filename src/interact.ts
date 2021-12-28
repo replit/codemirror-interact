@@ -60,7 +60,7 @@ const interactTheme = EditorView.theme({
  * })
  * ```
  */
-export const interactRule = Facet.define<InteractRule>();
+const interactRule = Facet.define<InteractRule>();
 
 interface ViewState extends PluginValue {
   dragging: Target | null,
@@ -233,7 +233,14 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
   },
 })
 
-export const interact = [
+interface InteractConfig {
+  rules?: InteractRule[],
+}
+
+const interact = (cfg: InteractConfig = {}) => [
   interactTheme,
   interactViewPlugin,
+  (cfg.rules ?? []).map((r) => interactRule.of(r)),
 ];
+
+export default interact;
