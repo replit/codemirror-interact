@@ -5,7 +5,7 @@
 import { EditorView } from '@codemirror/view';
 import { EditorState, basicSetup } from '@codemirror/basic-setup';
 import { javascript } from '@codemirror/lang-javascript';
-import interact from '../src/interact';
+import bret from '../src/bret';
 
 const doc = `
 // hold Alt and drag / click values
@@ -23,7 +23,7 @@ new EditorView({
     extensions: [
       basicSetup,
       javascript(),
-      interact({
+      bret({
         rules: [
           {
             regexp: /-?\b\d+\.?\d*\b/g,

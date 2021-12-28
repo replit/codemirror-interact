@@ -30,11 +30,11 @@ export interface InteractRule {
   onDrag?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
 }
 
-const mark = Decoration.mark({ class: 'cm-interact'});
+const mark = Decoration.mark({ class: 'cm-bret'});
 const setInteract = StateEffect.define<Target | null>();
 
-const interactTheme = EditorView.theme({
-  '.cm-interact': {
+const bretTheme = EditorView.theme({
+  '.cm-bret': {
     background: 'rgba(128, 128, 255, 0.2)',
     borderRadius: '4px'
   },
@@ -46,7 +46,7 @@ const interactTheme = EditorView.theme({
  * @example
  * ```
  * // a number dragger
- * interactRule.of({
+ * bretRule.of({
  *     // the regexp matching the value
  *     regexp: /-?\b\d+\.?\d*\b/g,
  *     // set cursor to 'ew-resize'on hover
@@ -60,7 +60,7 @@ const interactTheme = EditorView.theme({
  * })
  * ```
  */
-const interactRule = Facet.define<InteractRule>();
+const bretRule = Facet.define<InteractRule>();
 
 interface ViewState extends PluginValue {
   dragging: Target | null,
@@ -74,7 +74,7 @@ interface ViewState extends PluginValue {
   unhighlight(): void,
 }
 
-const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
+const bretViewPlugin = ViewPlugin.define<ViewState>((view) => ({
 
   dragging: null,
   hovering: null,
@@ -85,7 +85,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
   // Get current match under cursor from all rules
   getMatch() {
 
-    const rules = view.state.facet(interactRule);
+    const rules = view.state.facet(bretRule);
     const pos = view.posAtCoords({ x: this.mouseX, y: this.mouseY });
     if (!pos) return null;
     const line = view.state.doc.lineAt(pos);
@@ -237,10 +237,10 @@ interface InteractConfig {
   rules?: InteractRule[],
 }
 
-const interact = (cfg: InteractConfig = {}) => [
-  interactTheme,
-  interactViewPlugin,
-  (cfg.rules ?? []).map((r) => interactRule.of(r)),
+const bret = (cfg: InteractConfig = {}) => [
+  bretTheme,
+  bretViewPlugin,
+  (cfg.rules ?? []).map((r) => bretRule.of(r)),
 ];
 
-export default interact;
+export default bret;

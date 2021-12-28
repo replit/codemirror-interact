@@ -1,22 +1,22 @@
-# CodeMirror Interact
+# bret
 
-A codemirror extension that lets you interact with different values (clicking, dragging, etc).
+A codemirror extension that lets you interact with different values (clicking, dragging, etc). Inspired by the works of [Bret Victor](http://worrydream.com/)
 
-[demo](https://replit.com/@slmjkdbtl/codemirror-interact)
+[demo](https://replit.com/@slmjkdbtl/bret)
 
 ### Usage
 
 ```ts
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
-import interact from '@replit/codemirror-interact';
+import bret from '@replit/bret';
 
 // hold Alt and drag / click values
 new EditorView({
   state: EditorState.create({
     doc: 'const num = 123',
     extensions: [
-      interact({
+      bret({
         rules: [
           // a rule for a number dragger
           {
