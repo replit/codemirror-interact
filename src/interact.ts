@@ -16,13 +16,13 @@ import {
   Facet,
 } from '@codemirror/state'
 
-type Target = {
+interface Target {
   pos: number,
   text: string,
   rule: InteractRule,
 }
 
-export type InteractRule = {
+export interface InteractRule {
   regexp: RegExp,
   cursor?: string,
   style?: any,
@@ -62,7 +62,7 @@ const interactTheme = EditorView.theme({
  */
 export const interactRule = Facet.define<InteractRule>();
 
-type ViewState = PluginValue & {
+interface ViewState extends PluginValue {
   dragging: Target | null,
   hovering: Target | null,
   mouseX: number,
