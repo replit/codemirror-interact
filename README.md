@@ -9,7 +9,7 @@ A codemirror extension that lets you interact with different values (clicking, d
 ```ts
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
-import { interact, interactRule } from '@replit/codemirror-interact';
+import interact from '@replit/codemirror-interact';
 
 // hold Alt and drag / click values
 new EditorView({
