@@ -1,7 +1,7 @@
 {
   "name": "@replit/codemirror-interact",
   "description": "Interact with custom values",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "license": "MIT",
   "author": {
     "name": "tga",
@@ -18,7 +18,8 @@
   "scripts": {
     "dev": "vite ./dev",
     "build": "cm-buildhelper src/interact.ts",
-    "test": "cm-runtests"
+    "test": "cm-runtests",
+    "prepare": "npm run build"
   },
   "files": [
     "dist/",
