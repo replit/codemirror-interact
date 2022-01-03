@@ -2,6 +2,8 @@
 
 A codemirror extension that lets you interact with different values (clicking, dragging, etc).
 
+https://user-images.githubusercontent.com/9929523/147966613-270cdece-564f-4906-b6e8-b48975a0d9e2.mp4
+
 [demo](https://replit.com/@slmjkdbtl/codemirror-interact)
 
 ### Usage
