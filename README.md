@@ -1,15 +1,15 @@
-# CodeMirror Interact
+# CodeMirror CIA (Code Interaction Agency)
 
 A codemirror extension that lets you interact with different values (clicking, dragging, etc).
 
-[demo](https://replit.com/@slmjkdbtl/codemirror-interact)
+[demo](https://replit.com/@slmjkdbtl/codemirror-cia)
 
 ### Usage
 
 ```ts
 import { EditorState } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
-import interact from '@replit/codemirror-interact';
+import interact from '@replit/codemirror-cia';
 
 // hold Alt and drag / click values
 new EditorView({
