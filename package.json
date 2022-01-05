@@ -1,7 +1,7 @@
 {
   "name": "@replit/codemirror-interact",
   "description": "Interact with custom values",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "license": "MIT",
   "author": {
     "name": "tga",
