@@ -1,5 +1,4 @@
 // TODO: don't use document.style.cursor
-// TODO: custom key mod
 // TODO: custom style
 // TODO: custom state for each rule?
 
@@ -60,7 +59,11 @@ const interactTheme = EditorView.theme({
  * })
  * ```
  */
-const interactRule = Facet.define<InteractRule>();
+export const interactRule = Facet.define<InteractRule>();
+
+export const interactModKey = Facet.define<ModKey, ModKey>({
+  combine: (values) => values[values.length - 1],
+});
 
 interface ViewState extends PluginValue {
   dragging: Target | null,
@@ -72,6 +75,7 @@ interface ViewState extends PluginValue {
   updateText(target: Target): (text: string) => void,
   highlight(target: Target): void,
   unhighlight(): void,
+  isModKeyDown(e: KeyboardEvent | MouseEvent): boolean,
 }
 
 const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
@@ -145,6 +149,17 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     });
   },
 
+  isModKeyDown(e) {
+    const modkey = view.state.facet(interactModKey);
+    switch (modkey) {
+      case "alt": return e.altKey;
+      case "shift": return e.shiftKey;
+      case "ctrl": return e.ctrlKey;
+      case "meta": return e.metaKey;
+    }
+    throw new Error(`Invalid mod key: ${modkey}`)
+  },
+
   update(update) {
     for (const tr of update.transactions) {
       for (const e of tr.effects) {
@@ -167,7 +182,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
 
     mousedown(e, view) {
 
-      if (!e.altKey) return;
+      if (!this.isModKeyDown(e)) return;
       const match = this.getMatch();
       if (!match) return;
       e.preventDefault();
@@ -191,7 +206,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
       this.mouseX = e.clientX;
       this.mouseY = e.clientY;
 
-      if (!e.altKey) return;
+      if (!this.isModKeyDown(e)) return;
 
       if (this.dragging) {
         this.highlight(this.dragging);
@@ -217,7 +232,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     },
 
     keydown(e, view) {
-      if (!e.altKey) return;
+      if (!this.isModKeyDown(e)) return;
       this.hovering = this.getMatch();
       if (this.hovering) {
         this.highlight(this.hovering);
@@ -225,7 +240,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     },
 
     keyup(e, view) {
-      if (!e.altKey) {
+      if (!this.isModKeyDown(e)) {
         this.unhighlight();
       }
     },
@@ -233,13 +248,21 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
   },
 })
 
+type ModKey =
+  | "alt"
+  | "shift"
+  | "meta"
+  | "ctrl"
+
 interface InteractConfig {
   rules?: InteractRule[],
+  key?: ModKey,
 }
 
 const interact = (cfg: InteractConfig = {}) => [
   interactTheme,
   interactViewPlugin,
+  interactModKey.of(cfg.key ?? "alt"),
   (cfg.rules ?? []).map((r) => interactRule.of(r)),
 ];
 
