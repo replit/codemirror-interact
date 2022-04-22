@@ -26,14 +26,14 @@
     "src/"
   ],
   "peerDependencies": {
-    "@codemirror/state": "0.19.x",
-    "@codemirror/view": "0.19.x"
+    "@codemirror/state": "^0.20.0",
+    "@codemirror/view": "0.20.0"
   },
   "devDependencies": {
-    "@codemirror/basic-setup": "^0.19.1",
-    "@codemirror/buildhelper": "^0.1.11",
-    "@codemirror/lang-javascript": "^0.19.3",
-    "@codemirror/view": "^0.19.35",
+    "@codemirror/basic-setup": "^0.20.0",
+    "@codemirror/buildhelper": "^0.1.15",
+    "@codemirror/lang-javascript": "^0.20.0",
+    "@codemirror/view": "^0.20.1",
     "vite": "^2.7.4"
   }
 }

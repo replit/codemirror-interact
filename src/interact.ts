@@ -1,7 +1,6 @@
 // TODO: don't use document.style.cursor
 // TODO: custom style
 // TODO: custom state for each rule?
-
 import {
   EditorView,
   ViewPlugin,
@@ -9,7 +8,6 @@ import {
   DecorationSet,
   Decoration,
 } from '@codemirror/view'
-
 import {
   StateEffect,
   Facet,

@@ -1,10 +1,13 @@
 # CodeMirror Interact
 
-A codemirror extension that lets you interact with different values (clicking, dragging, etc).
+<span><a href="https://replit.com/@util/codemirror-interact" title="Run on Replit badge"><img src="https://replit.com/badge/github/replit/codemirror-interact" alt="Run on Replit badge" /></a></span>
+<span><a href="https://www.npmjs.com/package/@replit/codemirror-interact" title="NPM version badge"><img src="https://img.shields.io/npm/v/@replit/codemirror-interact?color=blue" alt="NPM version badge" /></a></span>
+
+A CodeMirror extension that lets you interact with different values (clicking, dragging, etc).
 
 https://user-images.githubusercontent.com/9929523/147966613-270cdece-564f-4906-b6e8-b48975a0d9e2.mp4
 
-[demo](https://replit.com/@slmjkdbtl/codemirror-interact)
+[demo](https://replit.com/@util/codemirror-interact)
 
 ### Usage
 
