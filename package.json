@@ -1,7 +1,7 @@
 {
   "name": "@replit/codemirror-interact",
   "description": "Interact with custom values",
-  "version": "0.20.0",
+  "version": "6.0.0",
   "license": "MIT",
   "author": {
     "name": "tga",
@@ -26,14 +26,18 @@
     "src/"
   ],
   "peerDependencies": {
-    "@codemirror/state": "^0.20.0",
-    "@codemirror/view": "0.20.0"
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/view": "6.0.0"
   },
   "devDependencies": {
-    "@codemirror/basic-setup": "^0.20.0",
-    "@codemirror/buildhelper": "^0.1.15",
-    "@codemirror/lang-javascript": "^0.20.0",
-    "@codemirror/view": "^0.20.1",
+    "@codemirror/buildhelper": "^0.1.16",
+    "@codemirror/lang-javascript": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "codemirror": "^6.0.0",
     "vite": "^2.7.4"
+  },
+  "dependencies": {
+    "codemirror": "^6.0.0",
+    "@codemirror/state": "^6.0.0"
   }
 }

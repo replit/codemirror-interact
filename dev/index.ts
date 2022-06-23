@@ -1,8 +1,9 @@
 // 1. move cursor on different values
 // 2. hold Alt key
 // 3. click / drag
+import { basicSetup } from 'codemirror';
 import { EditorView } from '@codemirror/view';
-import { EditorState, basicSetup } from '@codemirror/basic-setup';
+import { EditorState } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import interact from '../src/interact';
 
