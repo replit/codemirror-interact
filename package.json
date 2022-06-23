@@ -35,5 +35,8 @@
     "@codemirror/view": "^6.0.0",
     "codemirror": "^6.0.0",
     "vite": "^2.7.4"
+  },
+  "dependencies": {
+    "@codemirror/state": "^6.0.1"
   }
 }
