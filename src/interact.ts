@@ -229,6 +229,12 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
       }
     },
 
+    mouseleave(e, view) {
+      this.hovering = null;
+      this.dragging = null;
+      this.unhighlight();
+    },
+
     keydown(e, view) {
       if (!this.isModKeyDown(e)) return;
       this.hovering = this.getMatch();
