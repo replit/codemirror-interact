@@ -1,7 +1,7 @@
 {
   "name": "@replit/codemirror-interact",
   "description": "Interact with custom values",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "license": "MIT",
   "author": {
     "name": "tga",
@@ -27,13 +27,13 @@
   ],
   "peerDependencies": {
     "@codemirror/state": "^6.0.0",
-    "@codemirror/view": "6.0.0"
+    "@codemirror/view": "^6.0.0"
   },
   "devDependencies": {
     "@codemirror/buildhelper": "^0.1.16",
     "@codemirror/lang-javascript": "^6.0.0",
     "@codemirror/view": "^6.0.0",
     "codemirror": "^6.0.0",
-    "vite": "^2.7.4"
+    "vite": "^3.0.0"
   }
 }
