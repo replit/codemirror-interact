@@ -1,4 +1,3 @@
-// TODO: don't use document.style.cursor
 // TODO: custom style
 // TODO: custom state for each rule?
 import {
@@ -11,6 +10,8 @@ import {
 import {
   StateEffect,
   Facet,
+  Prec,
+  Compartment,
 } from '@codemirror/state'
 
 interface Target {
@@ -62,6 +63,18 @@ export const interactRule = Facet.define<InteractRule>();
 export const interactModKey = Facet.define<ModKey, ModKey>({
   combine: (values) => values[values.length - 1],
 });
+
+const setStyle = (style = '') =>
+  EditorView.contentAttributes.of({ style });
+
+const normalCursor = setStyle();
+const cursorCompartment = new Compartment();
+const cursorRule = Prec.highest(cursorCompartment.of(normalCursor));
+
+const clearCursor = () => cursorCompartment.reconfigure(normalCursor);
+
+const setCursor = (cursor?: string) =>
+  cursor ? [cursorCompartment.reconfigure(setStyle(`cursor: ${cursor}`))] : [];
 
 interface ViewState extends PluginValue {
   dragging: Target | null,
@@ -132,18 +145,14 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
 
   // highlight a target (e.g. currently dragging or hovering)
   highlight(target) {
-    if (target.rule.cursor) {
-      document.body.style.cursor = target.rule.cursor;
-    }
     view.dispatch({
-      effects: setInteract.of(target),
+      effects: [setInteract.of(target), ...setCursor(target.rule.cursor)],
     });
   },
 
   unhighlight() {
-    document.body.style.cursor = 'auto'
     view.dispatch({
-      effects: setInteract.of(null),
+      effects: [setInteract.of(null), clearCursor()],
     });
   },
 
@@ -267,6 +276,7 @@ const interact = (cfg: InteractConfig = {}) => [
   interactTheme,
   interactViewPlugin,
   interactModKey.of(cfg.key ?? "alt"),
+  cursorRule,
   (cfg.rules ?? []).map((r) => interactRule.of(r)),
 ];
 
