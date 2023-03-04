@@ -189,11 +189,15 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
   isModKeyDown(e) {
     const modkey = view.state.facet(interactModKey);
 
+    const isMac = Boolean(window.navigator) &&
+      window.navigator.userAgent.includes('Macintosh');
+
     switch (modkey) {
       case "alt": return e.altKey;
       case "shift": return e.shiftKey;
       case "ctrl": return e.ctrlKey;
       case "meta": return e.metaKey;
+      case "mod": return isMac ? e.metaKey : e.ctrlKey;
     }
 
     throw new Error(`Invalid mod key: ${modkey}`)
@@ -299,6 +303,7 @@ type ModKey =
   | "shift"
   | "meta"
   | "ctrl"
+  | "mod";
 
 interface InteractConfig {
   rules?: InteractRule[],
