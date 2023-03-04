@@ -94,7 +94,7 @@ new EditorView({
       }),
     ],
   }),
-  parent: document.querySelector('#editor'),
+  parent: document.querySelector('#editor') as Element,
 });
 
 const hex2rgb = (hex: string): [number, number, number] => {
