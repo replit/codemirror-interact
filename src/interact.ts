@@ -23,6 +23,7 @@ export interface InteractRule {
   regexp: RegExp,
   cursor?: string,
   style?: any,
+  className?: string,
   onClick?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
   onDrag?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
 }
@@ -68,8 +69,9 @@ const interactField = StateField.define<Target | null>({
 
       const from = target.pos;
       const to = target.pos + target.text.length;
+      const className = target.rule.className;
 
-      return Decoration.set(mark.range(from, to))
+      return Decoration.set(mark({ className }).range(from, to))
     }),
     EditorView.contentAttributes.from(field, (target) => {
       if (!target || !target.rule.cursor) {
@@ -83,7 +85,10 @@ const interactField = StateField.define<Target | null>({
 
 const setInteract = StateEffect.define<Target | null>();
 
-const mark = Decoration.mark({ class: 'cm-interact' });
+const mark = (e: { className?: string }) => Decoration.mark({
+  class: `cm-interact ${e?.className ?? ''}`
+});
+
 
 const interactTheme = EditorView.theme({
   '.cm-interact': {

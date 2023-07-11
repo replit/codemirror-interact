@@ -17,12 +17,19 @@ const e = false
 const f = 'http://example.com'
 `.trim();
 
+const theme = EditorView.theme({
+  '.cm-interact-url > *': {
+    textDecoration: 'underline'
+  }
+})
+
 new EditorView({
   state: EditorState.create({
     doc,
     extensions: [
       basicSetup,
       javascript(),
+      theme,
       interact({
         rules: [
           {
@@ -86,6 +93,7 @@ new EditorView({
           {
             regexp: /https?:\/\/[^ "]+/g,
             cursor: "pointer",
+            className: "cm-interact-url",
             onClick: (text) => {
               window.open(text);
             },

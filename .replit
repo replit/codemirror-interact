@@ -1,6 +1,7 @@
 run = "yarn run dev"
 
 entrypoint = "main.sh"
+hidden = [".build", ".config"]
 
 [env]
 XDG_CONFIG_HOME = "/home/runner/.config"
@@ -15,3 +16,14 @@ pattern = "**/{*.ts,*.js,*.tsx,*.jsx}"
 
 [languages.typescript.languageServer]
 start = "typescript-language-server --stdio"
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+enabledForHosting = false
+packageSearch = true
+guessImports = true
+
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix", ".config"]
