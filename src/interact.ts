@@ -26,6 +26,8 @@ export interface InteractRule {
   className?: string,
   onClick?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
   onDrag?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
+  onDragStart?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
+  onDragEnd?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
 }
 
 const interactField = StateField.define<Target | null>({
@@ -240,6 +242,9 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
 
       if (match.rule.onDrag) {
         this.dragging = true
+        if (this.target?.rule.onDragStart) {
+          this.target.rule.onDragStart(this.target.text, this.updateText(this.target), e);
+        }
       }
     },
 
@@ -268,6 +273,10 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     mouseup(e, _view) {
       this.dragging = false
 
+      if (this.target?.rule.onDragEnd) {
+        this.target.rule.onDragEnd(this.target.text, this.updateText(this.target), e);
+      }
+
       if (this.target && !this.isModKeyDown(e)) {
         this.setTarget(null)
       }
@@ -277,9 +286,12 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
       }
     },
 
-    mouseleave(_e, _view) {
+    mouseleave(e, _view) {
       this.dragging = false;
       if (this.target) {
+        if (this.target.rule.onDragEnd) {
+          this.target.rule.onDragEnd(this.target.text, this.updateText(this.target), e);
+        }
         this.setTarget(null)
       }
     },
