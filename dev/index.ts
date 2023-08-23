@@ -79,7 +79,7 @@ new EditorView({
               const sel = document.createElement("input");
               sel.type = "color";
               if (!isNaN(r + g + b)) sel.value = rgb2hex(r, g, b);
-              sel.addEventListener("input", (e) => {
+              sel.addEventListener("change", (e) => {
                 const el = e.target as HTMLInputElement;
                 if (el.value) {
                   const [r, g, b] = hex2rgb(el.value);
@@ -91,7 +91,7 @@ new EditorView({
           },
           // url clicker
           {
-            regexp: /https?:\/\/[^ "]+/g,
+            regexp: /https?:\/\/[^ "']+/g,
             cursor: "pointer",
             className: "cm-interact-url",
             onClick: (text) => {
