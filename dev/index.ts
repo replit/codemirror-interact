@@ -41,7 +41,7 @@ new EditorView({
               const newVal = Number(text) + e.movementX;
               if (isNaN(newVal)) return;
               setText(newVal.toString());
-            }
+            },
           },
           // bool toggler
           {

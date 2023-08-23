@@ -27,7 +27,7 @@ export interface InteractRule {
   onClick?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
   onDrag?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
   onDragStart?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
-  onDragEnd?: (text: string, setText: (t: string) => void, e: MouseEvent) => void,
+  onDragEnd?: (text: string, setText: (t: string) => void) => void,
 }
 
 const interactField = StateField.define<Target | null>({
@@ -134,6 +134,8 @@ interface ViewState extends PluginValue {
   updateText(target: Target): (text: string) => void,
   setTarget(target: Target | null): void,
   isModKeyDown(e: KeyboardEvent | MouseEvent): boolean,
+  startDrag(e: MouseEvent): void,
+  endDrag(): void,
 }
 
 const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
@@ -221,30 +223,40 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     if (this.target !== target) {
       this.target = target
       if (target === null) {
-        this.dragging = false
+        this.endDrag();
       }
     }
+  },
+
+  startDrag(e: MouseEvent) {
+    if (this.dragging) return
+    if (!this.target) return;
+    this.dragging = true
+    if (!this.target.rule.onDragStart) return;
+    this.target.rule.onDragStart(this.target.text, this.updateText(this.target), e);
+  },
+
+  endDrag() {
+    if (!this.dragging) return
+    this.dragging = false
+    if (!this.target?.rule.onDragEnd) return;
+    this.target.rule.onDragEnd(this.target.text, this.updateText(this.target));
   },
 
 }), {
   eventHandlers: {
     mousedown(e, _view) {
       if (!this.isModKeyDown(e)) return;
-
-      const match = this.getMatch();
-      if (!match) return;
+      if (!this.target) return;
 
       e.preventDefault();
 
-      if (match.rule.onClick) {
-        match.rule.onClick(match.text, this.updateText(match), e);
+      if (this.target.rule.onClick) {
+        this.target.rule.onClick(this.target.text, this.updateText(this.target), e);
       };
 
-      if (match.rule.onDrag) {
-        this.dragging = true
-        if (this.target?.rule.onDragStart) {
-          this.target.rule.onDragStart(this.target.text, this.updateText(this.target), e);
-        }
+      if (this.target.rule.onDrag) {
+        this.startDrag(e);
       }
     },
 
@@ -271,11 +283,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     },
 
     mouseup(e, _view) {
-      this.dragging = false
-
-      if (this.target?.rule.onDragEnd) {
-        this.target.rule.onDragEnd(this.target.text, this.updateText(this.target), e);
-      }
+      this.endDrag();
 
       if (this.target && !this.isModKeyDown(e)) {
         this.setTarget(null)
@@ -287,11 +295,8 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     },
 
     mouseleave(e, _view) {
-      this.dragging = false;
+      this.endDrag();
       if (this.target) {
-        if (this.target.rule.onDragEnd) {
-          this.target.rule.onDragEnd(this.target.text, this.updateText(this.target), e);
-        }
         this.setTarget(null)
       }
     },
@@ -308,6 +313,7 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
 
     keyup(e, _view) {
       if (this.target && !this.isModKeyDown(e)) {
+        this.endDrag();
         this.setTarget(null)
       }
     },
