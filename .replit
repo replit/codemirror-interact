@@ -27,3 +27,7 @@ guessImports = true
 
 [gitHubImport]
 requiredFiles = [".replit", "replit.nix", ".config"]
+
+[[ports]]
+localPort = 5173
+externalPort = 80
