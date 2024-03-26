@@ -252,8 +252,14 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
       e.preventDefault();
 
       if (this.target.rule.onClick) {
-        this.target.rule.onClick(this.target.text, this.updateText(this.target), e);
-      };
+        this.target.rule.onClick(
+          this.target.text,
+          (text) => {
+            this.target && this.updateText(this.target)(text);
+          },
+          e
+        );
+      }
 
       if (this.target.rule.onDrag) {
         this.startDrag(e);
