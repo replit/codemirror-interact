@@ -5,13 +5,9 @@ import {
   ViewPlugin,
   PluginValue,
   Decoration,
-} from '@codemirror/view'
-import {
-  StateEffect,
-  StateField,
-  Facet,
-  MapMode,
-} from '@codemirror/state'
+  ViewUpdate,
+} from '@codemirror/view';
+import { StateEffect, StateField, Facet, MapMode } from '@codemirror/state';
 
 interface Target {
   pos: number,
@@ -125,33 +121,25 @@ export const interactModKey = Facet.define<ModKey, ModKey>({
   combine: (values) => values[values.length - 1],
 });
 
-interface ViewState extends PluginValue {
-  target: Target | null,
-  dragging: boolean,
-  mouseX: number,
-  mouseY: number,
-  getMatch(): Target | null,
-  updateText(target: Target): (text: string) => void,
-  setTarget(target: Target | null): void,
-  isModKeyDown(e: KeyboardEvent | MouseEvent): boolean,
-  startDrag(e: MouseEvent): void,
-  endDrag(): void,
-}
+class InteractViewPlugin implements PluginValue {
+  target: Target | null;
+  dragging: boolean;
+  mouseX: number;
+  mouseY: number;
 
-const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
-
-  target: null,
-  dragging: false,
-  mouseX: 0,
-  mouseY: 0,
+  constructor(public view: EditorView) {
+    this.target = null;
+    this.dragging = false;
+    this.mouseX = 0;
+    this.mouseY = 0;
+  }
 
   // Get current match under cursor from all rules
   getMatch() {
-
-    const rules = view.state.facet(interactRule);
-    const pos = view.posAtCoords({ x: this.mouseX, y: this.mouseY });
+    const rules = this.view.state.facet(interactRule);
+    const pos = this.view.posAtCoords({ x: this.mouseX, y: this.mouseY });
     if (!pos) return null;
-    const line = view.state.doc.lineAt(pos);
+    const line = this.view.state.doc.lineAt(pos);
     const lpos = pos - line.from;
     let match = null;
 
@@ -166,20 +154,20 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
         // If there are overlap matches from different rules, use the smaller one
         if (!match || text.length < match.text.length) {
           match = {
-            rule: rule,
+            rule,
             pos: line.from + start,
-            text: text,
+            text,
           };
         }
       }
     }
 
     return match;
-  },
+  }
 
-  updateText(target) {
-    return (text) => {
-      view.dispatch({
+  updateText(target: Target) {
+    return (text: string) => {
+      this.view.dispatch({
         effects: setInteract.of({ ...target, text }),
         changes: {
           from: target.pos,
@@ -188,15 +176,15 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
         },
       });
     };
-  },
+  }
 
-  setTarget(target) {
+  setTarget(target: Target | null) {
     this.target = target;
-    view.dispatch({ effects: setInteract.of(target) });
-  },
+    this.view.dispatch({ effects: setInteract.of(target) });
+  }
 
-  isModKeyDown(e) {
-    const modkey = view.state.facet(interactModKey);
+  isModKeyDown(e: KeyboardEvent | MouseEvent) {
+    const modkey = this.view.state.facet(interactModKey);
 
     const isMac = Boolean(window.navigator) &&
       window.navigator.userAgent.includes('Macintosh');
@@ -210,10 +198,10 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
     }
 
     throw new Error(`Invalid mod key: ${modkey}`)
-  },
+  }
 
-  update(update) {
-    const target = update.state.field(interactField, false)
+  update(update: ViewUpdate) {
+    const target = update.state.field(interactField, false);
 
     // the field isn't mounted
     if (target === undefined) {
@@ -226,24 +214,79 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
         this.endDrag();
       }
     }
-  },
+  }
+
+  destroy(): void {
+    this.endDrag();
+  }
 
   startDrag(e: MouseEvent) {
-    if (this.dragging) return
+    if (this.dragging) return;
     if (!this.target) return;
-    this.dragging = true
+    this.dragging = true;
+    window.addEventListener('mousemove', this.drag);
+    window.addEventListener('mouseup', this.mouseUp);
+    if (this.target.rule.cursor) {
+      startGlobalCursor(this.target.rule.cursor);
+    }
+
     if (!this.target.rule.onDragStart) return;
-    this.target.rule.onDragStart(this.target.text, this.updateText(this.target), e);
-  },
+    this.target.rule.onDragStart(
+      this.target.text,
+      this.updateText(this.target),
+      e
+    );
+  }
 
   endDrag() {
-    if (!this.dragging) return
-    this.dragging = false
+    window.removeEventListener('mousemove', this.drag);
+    window.removeEventListener('mouseup', this.mouseUp);
+    stopGlobalCursor();
+    if (!this.dragging) return;
+    this.dragging = false;
     if (!this.target?.rule.onDragEnd) return;
     this.target.rule.onDragEnd(this.target.text, this.updateText(this.target));
-  },
+  }
 
-}), {
+  private mouseUp = (e: MouseEvent) => {
+    this.endDrag();
+
+    if (this.target && !this.isModKeyDown(e)) {
+      this.setTarget(null);
+    }
+
+    if (this.isModKeyDown(e)) {
+      this.setTarget(this.getMatch());
+    }
+  };
+
+  private drag = (e: MouseEvent) => {
+    this.mouseX = e.clientX;
+    this.mouseY = e.clientY;
+
+    if (!this.isModKeyDown(e)) {
+      if (this.target) {
+        this.setTarget(null);
+      }
+
+      return;
+    }
+
+    if (this.target && this.dragging) {
+      if (this.target.rule.onDrag) {
+        this.target.rule.onDrag(
+          this.target.text,
+          this.updateText(this.target),
+          e
+        );
+      }
+    } else {
+      this.setTarget(this.getMatch());
+    }
+  };
+}
+
+const interactViewPlugin = ViewPlugin.fromClass(InteractViewPlugin, {
   eventHandlers: {
     mousedown(e, _view) {
       if (!this.isModKeyDown(e)) return;
@@ -278,32 +321,8 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
         return
       }
 
-      if (this.target && this.dragging) {
-        if (this.target.rule.onDrag) {
-          this.target.rule.onDrag(this.target.text, this.updateText(this.target), e);
-        }
-      } else {
+      if (!this.target || !this.dragging) {
         this.setTarget(this.getMatch());
-      }
-
-    },
-
-    mouseup(e, _view) {
-      this.endDrag();
-
-      if (this.target && !this.isModKeyDown(e)) {
-        this.setTarget(null)
-      }
-
-      if (this.isModKeyDown(e)) {
-        this.setTarget(this.getMatch());
-      }
-    },
-
-    mouseleave(e, _view) {
-      this.endDrag();
-      if (this.target) {
-        this.setTarget(null)
       }
     },
 
@@ -323,9 +342,8 @@ const interactViewPlugin = ViewPlugin.define<ViewState>((view) => ({
         this.setTarget(null)
       }
     },
-
   },
-})
+});
 
 type ModKey =
   | "alt"
@@ -348,3 +366,27 @@ const interact = (cfg: InteractConfig = {}) => [
 ];
 
 export default interact;
+
+let overlay: HTMLDivElement | null = null;
+
+function startGlobalCursor(cursor: string) {
+  stopGlobalCursor();
+
+  overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.cursor = cursor;
+  overlay.style.zIndex = '999999';
+  overlay.style.pointerEvents = 'auto';
+  document.body.appendChild(overlay);
+}
+
+function stopGlobalCursor() {
+  if (overlay) {
+    overlay.remove();
+    overlay = null;
+  }
+}
