@@ -1,0 +1,16 @@
+on:
+  workflow_dispatch: {}
+name: Semgrep
+jobs:
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    container:
+      image: semgrep/semgrep
+    steps:
+    - uses: actions/checkout@v6
+    - run: semgrep ci
